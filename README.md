@@ -1,6 +1,16 @@
 # CatMock
 
 CatMock是一个[mock.js](http://mockjs.com/)的Java封装库。使用JDK自带的js脚本引擎直接调用mock.js脚本，实现对mock.js的统一。
+
+## 为什么采用这样的方案？
+在开发互联网应用时，前后端在开发前使用接口管理平台设计接口。市面上常见的接口管理平台大部分使用了Mock.js作为虚拟接口和接口测试的工具。
+
+设计接口时，接口的定义是项目的重要资产。Mock.js能很好地完成后端接口的单元测试。但后端在CI/CD进行集成测试时，往往需要自行编写测试用例，需要使用其它方式生成虚拟数据，无法复用接口设计阶段的项目资产。
+
+于是开始尝试使用纯Java编写一个兼容Mock.js语法的Mock工具：为了实现拓展自定义函数的功能，曾设计使用Java的Function接口对象作为用户自定义传入的函数来使用，但最后放弃了这一想法，因为写工具的初衷在于复用接口设计阶段的项目资产，而Function需要后端重新编写。
+
+最后，选择在Java中使用Java内置的JavaScript引擎直接调用mock.js，这样能保证和mock.js统一，保证接口设计阶段的项目资产能被复用。
+
 ## Maven
 ```xml
 <dependency>
@@ -9,7 +19,7 @@ CatMock是一个[mock.js](http://mockjs.com/)的Java封装库。使用JDK自带�
     <version>1.0.1</version>
 </dependency>
 ```
-## 文档
+## 使用说明
 
 ### 获取CatMock对象
 
@@ -91,6 +101,10 @@ catMock.extend("{\n" +
 catMock.random("constellation")//👉水瓶座
 catMock.mock("'@constellation'")//👉白羊座
 ```
+## Development Plan
+
+- mock.js后续版本的兼容
+- 变量容器：容器内可以存储各种变量，并能通过`xxx.xxx[index].xxx`的key值进行调用容器内的变量
 
 ## License
 

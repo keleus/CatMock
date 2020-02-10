@@ -5,23 +5,31 @@ import com.alibaba.fastjson.JSONObject;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.net.URL;
 import java.util.List;
+import java.util.jar.JarFile;
 
 public class CatMock {
     private final ScriptEngine engine;
     private final static String FILE_NAME = "mock.js";
 
-    public CatMock() throws FileNotFoundException, ScriptException {
+    public CatMock() throws IOException, ScriptException {
+        this.engine = new ScriptEngineManager().getEngineByName("js");
         URL url = CatMock.class.getClassLoader().getResource(FILE_NAME);
         if (url == null) {
             throw new FileNotFoundException();
+        } else {
+            String protocol = url.getProtocol();
+            //打包为jar环境
+            if("jar".equals(protocol)){
+                JarFile file = new JarFile(new File(CatMock.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+                this.engine.eval(new InputStreamReader(file.getInputStream(file.getJarEntry(FILE_NAME))));
+            }else if("file".equals(protocol)){
+                FileReader reader = new FileReader(url.getFile());
+                this.engine.eval(reader);
+            }
         }
-        FileReader reader = new FileReader(url.getFile());
-        this.engine = new ScriptEngineManager().getEngineByName("js");
-        this.engine.eval(reader);
     }
 
     public CatMock(FileReader reader) throws FileNotFoundException, ScriptException {

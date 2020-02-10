@@ -86,4 +86,4 @@ catMock.mock("'@constellation'")//👉白羊座
 
 ## License
 
-CatMock is available under the terms of the [MIT License](https://www.mit-license.org/).
+CatMock is available under the terms of the [MIT License](http://opensource.org/licenses/MIT).

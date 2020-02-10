@@ -38,7 +38,7 @@ public class CatMock {
     }
 
     public void extend(String script) throws ScriptException {
-        this.engine.eval("Random.extend(" + script + ")");
+        this.engine.eval("Mock.Random.extend(" + script + ")");
     }
 
     public String mock(String json) throws ScriptException {

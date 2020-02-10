@@ -32,7 +32,7 @@ public class CatMock {
         }
     }
 
-    public CatMock(FileReader reader) throws FileNotFoundException, ScriptException {
+    public CatMock(Reader reader) throws ScriptException {
         this.engine = new ScriptEngineManager().getEngineByName("js");
         this.engine.eval(reader);
     }

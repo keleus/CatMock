@@ -16,7 +16,7 @@ CatMock是一个[mock.js](http://mockjs.com/)的Java封装库。使用JDK自带�
 <dependency>
     <groupId>cn.myzju.mock</groupId>
     <artifactId>CatMock</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 ## Mock使用说明
@@ -151,7 +151,6 @@ container.translate("Bearer ${a1[2].${a2}s[0]}")//👉Bearer J9eXCt9c
 ## Development Plan
 
 - mock.js后续版本的兼容
-- 
 
 ## License
 

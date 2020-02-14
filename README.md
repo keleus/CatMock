@@ -19,7 +19,7 @@ CatMock是一个[mock.js](http://mockjs.com/)的Java封装库。使用JDK自带�
     <version>1.0.1</version>
 </dependency>
 ```
-## 使用说明
+## Mock使用说明
 
 ### 获取CatMock对象
 
@@ -101,10 +101,57 @@ catMock.extend("{\n" +
 catMock.random("constellation")//👉水瓶座
 catMock.mock("'@constellation'")//👉白羊座
 ```
+## Container使用说明
+
+### 获取CatContainer
+
+```java
+//获取的容器内部采用HashMap存储变量
+CatContainer container = CatContainer.commonContainer();
+//获取的容器内部采用ConcurrentHashMap存储变量
+CatContainer container = CatContainer.concurrentContainer();
+```
+
+### put()
+
+和常规Map的put有所不同，CatContainer会深入解析符合json串格式的值。
+
+运行如下代码，会在CatContainer内置的Map中产生`a1`、`a1[0]`、`a1[1]`、`a1[0].data`、`a1[0].data.token`、`a1[1].data`、`a1[1].data.token`的`<K, V>`键值对。
+
+```java
+container.put("a1","[{\"data\":{\"token\":\"AiOiJKV1\"}},{\"data\":{\"token\":\"J9eXCt9c\"}}]");
+```
+
+### get()
+
+通过key值获取内置Map中存储的对应value
+
+```java
+container.get("a1[0].data.token")//👉AiOiJKV1
+```
+
+### translate()
+
+将传入字符串中的`${key}`替换成相应的值，支持嵌套`${${}}`从内至外顺序解析，如下所示。
+
+```java
+//加载数据
+container.put("a1","[{\"data\":{\"token\":\"AiOiJKV1\"}},{\"data\":{\"token\":\"J9eXCt9c\"}},{\"data\":{\"tokens\":[\"J9eXCt9c\",\"AiOiJKV1\"]}}]");
+container.put("a2","data.token");
+
+container.translate("Bearer ${a1[2].${a2}s[0]}")//👉Bearer J9eXCt9c
+```
+
+### getParams()
+
+获得用于存储`<K, V>`键值对的内置Map对象，可以通过`container.getParams().put()`插入不愿深入解析的json字符串。
+
+**其余函数为内置Map的封装，用法与Map相同**
+
 ## Development Plan
 
 - mock.js后续版本的兼容
-- 变量容器：容器内可以存储各种变量，并能通过`xxx.xxx[index].xxx`的key值进行调用容器内的变量
+- 
 
 ## License
 

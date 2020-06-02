@@ -1,22 +1,29 @@
 package cn.myzju.mock;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CatContainer implements Cloneable, Serializable {
+    private final ObjectMapper mapper;
     private final Map<String, String> params;
 
     private CatContainer(Map<String, String> params) {
         if (params == null) {
             throw new NullPointerException();
         }
+        this.mapper = new ObjectMapper();
         this.params = params;
     }
 
@@ -71,15 +78,17 @@ public class CatContainer implements Cloneable, Serializable {
     public void put(String key, String value) {
         if (value != null) {
             try {
-                if (value.startsWith("{") && value.endsWith("}")) {
-                    readJSONObject(key, JSON.parseObject(value));
-                } else if (value.startsWith("[") && value.endsWith("]")) {
-                    readJSONArray(key, JSON.parseArray(value));
+                JsonNode jsonNode = mapper.readTree(value);
+                if (jsonNode.isObject()) {
+                    readJSONObject(key, jsonNode);
+                } else if (jsonNode.isArray()) {
+                    readJSONArray(key, jsonNode);
                 } else {
                     params.put(key, value);
                 }
-            } catch (JSONException e){
-                //处理非json格式，但以{}或[]开始结束的字符串
+            } catch (JsonMappingException e) {
+                params.put(key, value);
+            } catch (JsonProcessingException e) {
                 params.put(key, value);
             }
         }
@@ -99,29 +108,32 @@ public class CatContainer implements Cloneable, Serializable {
         params.clear();
     }
 
-    private void readJSONObject(String code, JSONObject jsonObject) {
-        params.put(code, jsonObject.toJSONString());
-        for (JSONObject.Entry<String, Object> entry : jsonObject.entrySet()) {
-            if (entry.getValue() instanceof JSONObject) {
-                readJSONObject(code + "." + entry.getKey(), jsonObject.getJSONObject(entry.getKey()));
-            } else if (entry.getValue() instanceof JSONArray) {
-                readJSONArray(code + "." + entry.getKey(), jsonObject.getJSONArray(entry.getKey()));
-            } else if (entry.getValue() != null) {
-                params.put(code + "." + entry.getKey(), jsonObject.getString(entry.getKey()));
+    private void readJSONObject(String code, JsonNode jsonNode) {
+        params.put(code, jsonNode.toString());
+        Iterator<String> iterator = jsonNode.fieldNames();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            JsonNode childNode = jsonNode.get(key);
+            if (childNode.isObject()) {
+                readJSONObject(code + "." + key, childNode);
+            } else if (childNode.isArray()) {
+                readJSONArray(code + "." + key, childNode);
+            } else if (childNode.isValueNode()) {
+                params.put(code + "." + key, childNode.textValue());
             }
         }
     }
 
-    private void readJSONArray(String code, JSONArray jsonArray) {
+    private void readJSONArray(String code, JsonNode jsonNode) {
         int index = 0;
-        params.put(code, jsonArray.toJSONString());
-        for (Object object : jsonArray) {
-            if (object instanceof JSONObject) {
-                readJSONObject(code + "[" + index + "]", jsonArray.getJSONObject(index));
-            } else if (object instanceof JSONArray) {
-                readJSONArray(code + "[" + index + "]", jsonArray.getJSONArray(index));
-            } else if (jsonArray.getString(index) != null) {
-                params.put(code + "[" + index + "]", jsonArray.getString(index));
+        params.put(code, jsonNode.textValue());
+        for (JsonNode childNode:jsonNode) {
+            if (childNode.isObject()) {
+                readJSONObject(code + "[" + index + "]", childNode);
+            } else if (childNode.isArray()) {
+                readJSONArray(code + "[" + index + "]", childNode);
+            } else if (childNode.isValueNode()) {
+                params.put(code + "[" + index + "]", childNode.textValue());
             }
             index++;
         }

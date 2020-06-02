@@ -1,6 +1,8 @@
 package cn.myzju.mock;
 
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -22,10 +24,10 @@ public class CatMock {
         } else {
             String protocol = url.getProtocol();
             //打包为jar环境
-            if("jar".equals(protocol)){
+            if ("jar".equals(protocol)) {
                 JarFile file = new JarFile(new File(CatMock.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
                 this.engine.eval(new InputStreamReader(file.getInputStream(file.getJarEntry(FILE_NAME))));
-            }else if("file".equals(protocol)){
+            } else if ("file".equals(protocol)) {
                 FileReader reader = new FileReader(url.getFile());
                 this.engine.eval(reader);
             }
@@ -45,12 +47,20 @@ public class CatMock {
         return this.engine.eval("JSON.stringify(Mock.mock(" + json + "))").toString();
     }
 
-    public<T> T mockObject(String json, Class<T> clazz) throws ScriptException {
-        return JSONObject.parseObject(mock(json), clazz);
+    public <T> T mockObject(String json, Class<T> clazz) throws JsonProcessingException, ScriptException {
+        return new ObjectMapper().readValue(mock(json), clazz);
     }
 
-    public<T> List<T> mockArray(String json, Class<T> clazz) throws ScriptException {
-        return JSONObject.parseArray(mock(json), clazz);
+    /**
+     * List转换方法
+     * @param json json字符串
+     * @param <T> 泛型，具体类型由调用方法的地方指定
+     * @return 返回转换结果
+     * @throws ScriptException mock.js执行错误异常
+     * @throws JsonProcessingException json格式错误
+     */
+    public <T> List<T> mockArray(String json) throws ScriptException, JsonProcessingException {
+        return new ObjectMapper().readValue(mock(json), new TypeReference<List<T>>() {});
     }
 
     public String random(String function) throws ScriptException {

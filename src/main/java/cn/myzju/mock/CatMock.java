@@ -2,6 +2,7 @@ package cn.myzju.mock;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.script.ScriptEngine;
@@ -9,15 +10,18 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
 
 public class CatMock {
     private final ScriptEngine engine;
     private final static String FILE_NAME = "mock.js";
+    private final ObjectMapper mapper;
 
     public CatMock() throws IOException, ScriptException {
         this.engine = new ScriptEngineManager().getEngineByName("js");
+        this.mapper = new ObjectMapper();
         URL url = CatMock.class.getClassLoader().getResource(FILE_NAME);
         if (url == null) {
             throw new FileNotFoundException();
@@ -36,6 +40,7 @@ public class CatMock {
 
     public CatMock(Reader reader) throws ScriptException {
         this.engine = new ScriptEngineManager().getEngineByName("js");
+        this.mapper = new ObjectMapper();
         this.engine.eval(reader);
     }
 
@@ -48,19 +53,27 @@ public class CatMock {
     }
 
     public <T> T mockObject(String json, Class<T> clazz) throws JsonProcessingException, ScriptException {
-        return new ObjectMapper().readValue(mock(json), clazz);
+        return mapper.readValue(mock(json), clazz);
     }
 
     /**
      * List转换方法
+     *
      * @param json json字符串
-     * @param <T> 泛型，具体类型由调用方法的地方指定
+     * @param <T>  泛型，具体类型由调用方法的地方指定
      * @return 返回转换结果
-     * @throws ScriptException mock.js执行错误异常
+     * @throws ScriptException         mock.js执行错误异常
      * @throws JsonProcessingException json格式错误
      */
-    public <T> List<T> mockArray(String json) throws ScriptException, JsonProcessingException {
-        return new ObjectMapper().readValue(mock(json), new TypeReference<List<T>>() {});
+    public <T> List<T> mockArray(String json, Class<T> clazz) throws ScriptException, JsonProcessingException {
+        JsonNode jsonNode = mapper.readTree(mock(json));
+        List<T> res = new ArrayList<T>();
+        if (jsonNode.isArray()) {
+            for (JsonNode node : jsonNode) {
+                res.add(mapper.readValue(node.toString(), clazz));
+            }
+        }
+        return res;
     }
 
     public String random(String function) throws ScriptException {

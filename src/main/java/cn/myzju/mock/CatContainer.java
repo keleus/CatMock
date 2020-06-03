@@ -122,7 +122,7 @@ public class CatContainer implements Cloneable, Serializable {
 
     private void readJSONArray(String code, JsonNode jsonNode) {
         int index = 0;
-        params.put(code, jsonNode.textValue());
+        params.put(code, jsonNode.toString());
         for (JsonNode childNode:jsonNode) {
             if (childNode.isObject()) {
                 readJSONObject(code + "[" + index + "]", childNode);

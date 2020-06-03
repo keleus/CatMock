@@ -12,6 +12,8 @@ CatMock是一个[mock.js](http://mockjs.com/)的Java封装库。使用JDK自带�
     <version>1.1.0</version>
 </dependency>
 ```
+注：1.2.0版本暂未上传Maven中央仓库，请自行下载源码使用
+
 ## Mock使用说明
 
 ### 获取CatMock对象
@@ -49,7 +51,7 @@ Person person = catMock.mockObject("{\"name\":\"@string\"}",Person.class);
 
 **生成Java List**
 
-传入字符串必须以`[`开始，并以`]`结束
+传入字符串必须以`[`开始，并以`]`结束，如果传入字符串非JsonArray格式，会返回一个size为0的List；如果传入字符串非json格式，可能会报错。
 
 ```java
 List<Person> persons = catMock.mockArray("[{\"name\":\"@string\"},{\"name\":\"@string\"}]",Person.class); 
@@ -144,6 +146,8 @@ container.translate("Bearer ${a1[2].${a2}s[0]}")//👉Bearer J9eXCt9c
 ## Development Plan
 
 - mock.js后续版本的兼容
+- 修复JSON处理引擎为Jackson后可能存在的BUG
+- Java正则工具
 
 ## License
 

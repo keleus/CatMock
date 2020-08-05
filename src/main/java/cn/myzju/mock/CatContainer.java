@@ -1,9 +1,7 @@
 package cn.myzju.mock;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -82,8 +80,6 @@ public class CatContainer implements Cloneable, Serializable {
                 } else {
                     params.put(key, value);
                 }
-            } catch (JsonMappingException e) {
-                params.put(key, value);
             } catch (JsonProcessingException e) {
                 params.put(key, value);
             }
@@ -123,7 +119,7 @@ public class CatContainer implements Cloneable, Serializable {
     private void readJSONArray(String code, JsonNode jsonNode) {
         int index = 0;
         params.put(code, jsonNode.toString());
-        for (JsonNode childNode:jsonNode) {
+        for (JsonNode childNode : jsonNode) {
             if (childNode.isObject()) {
                 readJSONObject(code + "[" + index + "]", childNode);
             } else if (childNode.isArray()) {
@@ -133,5 +129,9 @@ public class CatContainer implements Cloneable, Serializable {
             }
             index++;
         }
+    }
+
+    public ObjectMapper getMapper() {
+        return this.mapper;
     }
 }

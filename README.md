@@ -3,7 +3,7 @@
 CatMock是一个[mock.js](http://mockjs.com/)的Java封装库。使用JDK自带的js脚本引擎直接调用mock.js脚本，实现对mock.js的统一。让接口设计阶段产生的项目资产能被后端测试复用。
 
 ## Maven
-中央仓库地址：[https://search.maven.org/artifact/cn.myzju.mock/CatMock](https://search.maven.org/artifact/cn.myzju.mock/CatMock)
+中央仓库地址：[CatMock](https://search.maven.org/artifact/cn.myzju.mock/CatMock)
 
 ```xml
 <dependency>
@@ -142,11 +142,19 @@ container.translate("Bearer ${a1[2].${a2}s[0]}")//👉Bearer J9eXCt9c
 
 **其余函数为内置Map的封装，用法与Map相同**
 
+### getMapper()
+
+可以获得内置的ObjectMapper对象，对其进行配置了。
+
+```java
+container.getMapper().setSerializationInclusion(Include.ALWAYS); 
+container.getMapper().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+```
+
 ## Development Plan
 
 - mock.js后续版本的兼容
 - 修复JSON处理引擎为Jackson后可能存在的BUG
-- Java正则工具
 
 ## License
 

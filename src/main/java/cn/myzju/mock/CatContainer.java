@@ -14,7 +14,7 @@ public class CatContainer implements Cloneable, Serializable {
     private final Map<String, String> params;
 
     private CatContainer(Map<String, String> params, ObjectMapper mapper) {
-        if (mapper == null){
+        if (mapper == null) {
             mapper = new ObjectMapper();
         }
         this.mapper = mapper;

@@ -43,6 +43,37 @@ public class CatMock {
         this.engine.eval(reader);
     }
 
+    public CatMock(ObjectMapper mapper) throws IOException, ScriptException {
+        this.engine = new ScriptEngineManager().getEngineByName("js");
+        if (mapper == null){
+            mapper = new ObjectMapper();
+        }
+        this.mapper = mapper;
+        URL url = CatMock.class.getClassLoader().getResource(FILE_NAME);
+        if (url == null) {
+            throw new FileNotFoundException();
+        } else {
+            String protocol = url.getProtocol();
+            //打包为jar环境
+            if ("jar".equals(protocol)) {
+                JarFile file = new JarFile(new File(CatMock.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+                this.engine.eval(new InputStreamReader(file.getInputStream(file.getJarEntry(FILE_NAME))));
+            } else if ("file".equals(protocol)) {
+                FileReader reader = new FileReader(url.getFile());
+                this.engine.eval(reader);
+            }
+        }
+    }
+
+    public CatMock(Reader reader,ObjectMapper mapper) throws ScriptException {
+        this.engine = new ScriptEngineManager().getEngineByName("js");
+        if (mapper == null){
+            mapper = new ObjectMapper();
+        }
+        this.mapper = mapper;
+        this.engine.eval(reader);
+    }
+
     public void extend(String script) throws ScriptException {
         this.engine.eval("Mock.Random.extend(" + script + ")");
     }
@@ -81,5 +112,9 @@ public class CatMock {
         } else {
             return this.engine.eval("Mock.Random." + function + "()").toString();
         }
+    }
+
+    public ObjectMapper getMapper() {
+        return this.mapper;
     }
 }

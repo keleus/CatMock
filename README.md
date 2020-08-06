@@ -9,7 +9,7 @@ CatMock是一个[mock.js](http://mockjs.com/)的Java封装库。使用JDK自带�
 <dependency>
     <groupId>cn.myzju.mock</groupId>
     <artifactId>CatMock</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
 </dependency>
 ```
 
@@ -22,6 +22,18 @@ CatMock是一个[mock.js](http://mockjs.com/)的Java封装库。使用JDK自带�
 CatMock catMock = new CatMock();
 //使用外置的mock.js文件进行初始化
 CatMock catMock = new CatMock(new FileReader("{path}/mock.js"));
+//使用内置的mock.js文件初始化,并允许自定义内置的ObjectMapper
+CatMock catMock = new CatMock(new ObejctMapper());
+//使用外置的mock.js文件进行初始化,并允许自定义内置的ObjectMapper
+CatMock catMock = new CatMock(new FileReader("{path}/mock.js"),new ObejctMapper());
+```
+### getMapper()
+
+可以获得内置的ObjectMapper对象，对其进行配置了。
+
+```java
+catmock.getMapper().setSerializationInclusion(Include.ALWAYS); 
+catmock.getMapper().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 ```
 
 ### Random
@@ -104,6 +116,10 @@ catMock.mock("'@constellation'")//👉白羊座
 CatContainer container = CatContainer.commonContainer();
 //获取的容器内部采用ConcurrentHashMap存储变量
 CatContainer container = CatContainer.concurrentContainer();
+//获取的容器内部采用HashMap存储变量,并允许自定义内置的ObjectMapper
+CatContainer container = CatContainer.commonContainer(new ObejctMapper());
+//获取的容器内部采用ConcurrentHashMap存储变量,并允许自定义内置的ObjectMapper
+CatContainer container = CatContainer.concurrentContainer(new ObejctMapper());
 ```
 
 ### put()

@@ -5,6 +5,19 @@ CatMock是一个[mock.js](http://mockjs.com/)的Java封装库。使用JDK自带�
 ## Maven
 中央仓库地址：[CatMock](https://search.maven.org/artifact/cn.myzju.mock/CatMock)
 
+### 使用Graal.js引擎
+
+```xml
+<dependency>
+    <groupId>cn.myzju.mock</groupId>
+    <artifactId>CatMock</artifactId>
+    <version>2.0.0</version>
+</dependency>
+```
+
+### 使用Nashorn引擎
+*不推荐，JDK11中Nashorn引擎已经废弃*
+
 ```xml
 <dependency>
     <groupId>cn.myzju.mock</groupId>
@@ -12,6 +25,7 @@ CatMock是一个[mock.js](http://mockjs.com/)的Java封装库。使用JDK自带�
     <version>1.2.2</version>
 </dependency>
 ```
+
 
 ## Mock使用说明
 
@@ -70,13 +84,18 @@ List<Person> persons = catMock.mockArray("[{\"name\":\"@string\"},{\"name\":\"@s
 
 **生成String**
 
-mock方法传入非JSON格式的字符串（如下`e.g.1`所示）时，前后一定要加上单引号。
+1.X 版本中，mock方法传入非JSON格式的字符串（如下`e.g.1`所示）时，前后一定要加上单引号。
+
+2.X 以上版本中，mock方法传入非JSON格式的字符串（如下`e.g.3`所示）时，前后不用加上单引号，加上单引号时，输出结果会加上双引号。
 
 ```java
 //e.g.1
-catMock.mock("'@name'");//👉Anna Jackson
+catMock.mock("'@string'");//👉Anna Jackson
 //e.g.2
 catMock.mock("{\n'regexp|1-5': /\\d{5,10}\\-/\n}");//👉{"regexp": "5912165-6588485-0462848-"}
+//e.g.3
+catMock.mock("'@string'");//👉"Anna Jackson"
+catMock.mock("'@string'");//👉Anna Jackson
 ```
 
 ### Extend
@@ -105,7 +124,7 @@ catMock.extend("{\n" +
         "    }\n" +
         "}");
 catMock.random("constellation")//👉水瓶座
-catMock.mock("'@constellation'")//👉白羊座
+catMock.mock("@constellation")//👉白羊座
 ```
 ## Container使用说明
 
@@ -171,6 +190,7 @@ container.getMapper().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
 
 - mock.js后续版本的兼容
 - 修复JSON处理引擎为Jackson后可能存在的BUG
+- 修复js引擎修改为Graal.js后可能存在的BUG
 
 ## License
 

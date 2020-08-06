@@ -9,7 +9,7 @@ CatMock是一个[mock.js](http://mockjs.com/)的Java封装库。使用JDK自带�
 <dependency>
     <groupId>cn.myzju.mock</groupId>
     <artifactId>CatMock</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
 </dependency>
 ```
 

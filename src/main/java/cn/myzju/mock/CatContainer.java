@@ -13,20 +13,34 @@ public class CatContainer implements Cloneable, Serializable {
     private final ObjectMapper mapper;
     private final Map<String, String> params;
 
-    private CatContainer(Map<String, String> params) {
+    private CatContainer(Map<String, String> params, ObjectMapper mapper) {
         if (params == null) {
             throw new NullPointerException();
         }
-        this.mapper = new ObjectMapper();
+        this.mapper = mapper;
         this.params = params;
     }
 
     public static CatContainer commonContainer() {
-        return new CatContainer(new HashMap<String, String>());
+        return new CatContainer(new HashMap<String, String>(), new ObjectMapper());
     }
 
     public static CatContainer concurrentContainer() {
-        return new CatContainer(new ConcurrentHashMap<String, String>());
+        return new CatContainer(new ConcurrentHashMap<String, String>(), new ObjectMapper());
+    }
+
+    public static CatContainer commonContainer(ObjectMapper mapper) {
+        if (mapper == null){
+            mapper = new ObjectMapper();
+        }
+        return new CatContainer(new HashMap<String, String>(), mapper);
+    }
+
+    public static CatContainer concurrentContainer(ObjectMapper mapper) {
+        if (mapper == null){
+            mapper = new ObjectMapper();
+        }
+        return new CatContainer(new ConcurrentHashMap<String, String>(), mapper);
     }
 
     public String translate(String original) {

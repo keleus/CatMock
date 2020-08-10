@@ -1,6 +1,6 @@
 # CatMock
 
-CatMock是一个[mock.js](http://mockjs.com/)的Java封装库。使用JDK自带的js脚本引擎直接调用mock.js脚本，实现对mock.js的统一。让接口设计阶段产生的项目资产能被后端测试复用。
+CatMock是一个[mock.js] (http://mockjs.com/)的Java封装库。使用JDK自带的js脚本引擎直接调用mock.js脚本，实现对mock.js的统一。让接口设计阶段产生的项目资产能被后端测试复用。
 
 ## Maven
 中央仓库地址：[CatMock](https://search.maven.org/artifact/cn.myzju.mock/CatMock)
@@ -31,6 +31,16 @@ CatMock是一个[mock.js](http://mockjs.com/)的Java封装库。使用JDK自带�
 
 ### 获取CatMock对象
 
+2.x版本CatMock构造方法
+```java
+CatMock()
+CatMock(ObjectMapper mapper)
+CatMock(File file)
+CatMock(File file, ObjectMapper mapper)
+CatMock(URL url)
+CatMock(URL url, ObjectMapper mapper)
+```
+1.x版本CatMock构造方法
 ```java
 //使用内置的mock.js文件初始化
 CatMock catMock = new CatMock();
@@ -41,6 +51,7 @@ CatMock catMock = new CatMock(new ObejctMapper());
 //使用外置的mock.js文件进行初始化,并允许自定义内置的ObjectMapper
 CatMock catMock = new CatMock(new FileReader("{path}/mock.js"),new ObejctMapper());
 ```
+
 ### getMapper()
 
 可以获得内置的ObjectMapper对象，对其进行配置了。

@@ -106,7 +106,7 @@ catMock.mock("'@string'");//👉Anna Jackson
 catMock.mock("{\n'regexp|1-5': /\\d{5,10}\\-/\n}");//👉{"regexp": "5912165-6588485-0462848-"}
 //e.g.3
 catMock.mock("'@string'");//👉"Anna Jackson"
-catMock.mock("'@string'");//👉Anna Jackson
+catMock.mock("@string");//👉Anna Jackson
 ```
 
 ### Extend
